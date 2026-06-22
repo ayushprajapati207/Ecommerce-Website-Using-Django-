@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Age Store</title>
+    <link rel="stylesheet" href="{% static 'css/product_detail.css' %}">
+</head>
+<body>
+
+    <header>
+        <a href="{% url 'home' %}" class="logo">AGE.</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="#">Cart (0)</a>
+        </div>
+    </header>
+
+    <main>
+        <a href="{% url 'home' %}" class="back-link">&larr; Back to Shop</a>
+        
+        <div class="detail-container">
+            <div class="detail-image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <span class="placeholder-text">No Image Available</span>
+                {% endif %}
+            </div>
+            
+            <div class="detail-info">
+                <h1>{{ product.name }}</h1>
+                <p class="price">${{ product.price }}</p>
+                <p class="stock-status">In Stock ({{ product.stock }} available)</p>
+                
+                <div class="description">
+                    {{ product.description|linebreaks }}
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-cart">Add to Cart</button>
+                    <button class="btn btn-buy">Buy Now</button>
+                    <button class="wishlist-btn" title="Add to Wishlist">&#9825;</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

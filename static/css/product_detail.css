@@ -1,0 +1,36 @@
+/* Base Styles & Header */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #f4f7f6; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+header { background-color: #000; color: #fff; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; letter-spacing: 1px; }
+.nav-links a { color: #fff; text-decoration: none; margin-left: 20px; font-size: 15px; transition: color 0.3s; }
+.nav-links a:hover { color: #ccc; }
+main { flex: 1; padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+/* Product Detail Layout */
+.detail-container { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 20px; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.detail-image { flex: 1; min-width: 300px; display: flex; justify-content: center; align-items: center; background: #eaeaea; border-radius: 8px; overflow: hidden; }
+.detail-image img { width: 100%; height: auto; object-fit: cover; }
+
+/* Product Info & Typography */
+.detail-info { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
+.detail-info h1 { font-size: 32px; margin-bottom: 15px; }
+.detail-info .price { font-size: 28px; color: #2ed573; font-weight: bold; margin-bottom: 20px; }
+.detail-info .description { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 30px; flex-grow: 1; }
+.stock-status { margin-bottom: 20px; font-weight: bold; color: #27ae60; }
+
+/* Action Buttons */
+.action-buttons { display: flex; gap: 15px; }
+.btn { flex: 1; padding: 15px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; transition: background 0.3s; font-size: 16px; }
+.btn-cart { background-color: #f1f2f6; color: #2f3542; }
+.btn-cart:hover { background-color: #dfe4ea; }
+.btn-buy { background-color: #000; color: #fff; }
+.btn-buy:hover { background-color: #333; }
+
+/* Interactive Wishlist Heart */
+.wishlist-btn { background: #fff; border: 2px solid #ccc; color: #ccc; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; border-radius: 4px; padding: 0 20px; transition: all 0.3s; }
+.wishlist-btn:hover { border-color: #ff4757; color: #ff4757; }
+
+/* Back Navigation Link */
+.back-link { display: inline-block; margin-bottom: 20px; color: #000; text-decoration: none; font-weight: bold; }
+.back-link:hover { text-decoration: underline; }

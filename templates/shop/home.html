@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Store - Home</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">AGE.</a>
+        
+        <div class="search-container">
+            <input type="text" placeholder="Search for products...">
+            <button type="submit">Search</button>
+        </div>
+
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <a href="#">Welcome, {{ user.username }}</a>
+                <a href="#">Cart (0)</a>
+                <a href="#">Logout</a> 
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        <h1>Latest Products</h1>
+        <div class="product-grid">
+            
+            {% for product in products %}
+            <div class="card">
+                <div class="heart-icon" title="Add to Wishlist">&#9825;</div>
+                
+                <a href="{% url 'product_detail' product.slug %}" class="image-container" style="text-decoration: none;">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <span class="placeholder-text">No Image</span>
+                    {% endif %}
+                </a>
+                
+                <div class="card-content">
+                    <h3><a href="{% url 'product_detail' product.slug %}" style="text-decoration: none; color: inherit;">{{ product.name }}</a></h3>
+                    
+                    <p class="price">${{ product.price }}</p>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-cart">Add to Cart</button>
+                        <button class="btn btn-buy">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p>No products available right now. Please add some in the admin panel!</p>
+            {% endfor %}
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Age Store. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
