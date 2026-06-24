@@ -12,15 +12,15 @@
     <header>
         <a href="/" class="logo">AGE.</a>
         
-        <div class="search-container">
-            <input type="text" placeholder="Search for products...">
+        <form class="search-container" method="GET" action="{% url 'home' %}">
+            <input type="text" name="q" placeholder="Search for products..." value="{{ search_query|default_if_none:'' }}">
             <button type="submit">Search</button>
-        </div>
+        </form>
 
         <div class="nav-links">
             {% if user.is_authenticated %}
                 <a href="#">Welcome, {{ user.username }}</a>
-                <a href="#">Cart (0)</a>
+                <a href="#">Cart (<span id="cart-count">0</span>)</a>
                 <a href="#">Logout</a> 
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
@@ -34,7 +34,7 @@
             
             {% for product in products %}
             <div class="card">
-                <div class="heart-icon" title="Add to Wishlist">&#9825;</div>
+                <div class="heart-icon" title="Add to Wishlist" data-product-id="{{ product.id }}">&#9825;</div>
                 
                 <a href="{% url 'product_detail' product.slug %}" class="image-container" style="text-decoration: none;">
                     {% if product.image %}
@@ -50,7 +50,7 @@
                     <p class="price">${{ product.price }}</p>
                     
                     <div class="button-group">
-                        <button class="btn btn-cart">Add to Cart</button>
+                        <button class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
                         <button class="btn btn-buy">Buy Now</button>
                     </div>
                 </div>
@@ -65,6 +65,7 @@
     <footer>
         <p>&copy; 2026 Age Store. All rights reserved.</p>
     </footer>
-
+    <script src="{% static 'js/cart.js' %}"></script>
+    <script src="{% static 'js/wishlist.js' %}"></script>
 </body>
 </html>

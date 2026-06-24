@@ -39,13 +39,14 @@
                 </div>
                 
                 <div class="action-buttons">
-                    <button class="btn btn-cart">Add to Cart</button>
+                    <button class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
                     <button class="btn btn-buy">Buy Now</button>
-                    <button class="wishlist-btn" title="Add to Wishlist">&#9825;</button>
+                    <button class="wishlist-btn" title="Add to Wishlist" data-product-id="{{ product.id }}">&#9825;</button>
                 </div>
             </div>
         </div>
     </main>
-
+    <script src="{% static 'js/cart.js' %}"></script>
+    <script src="{% static 'js/wishlist.js' %}"></script>
 </body>
 </html>
