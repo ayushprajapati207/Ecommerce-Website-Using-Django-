@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Age Store</title>
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+</head>
+<body>
+
+    <header>
+        <a href="{% url 'home' %}" class="logo">AGE.</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Continue Shopping</a>
+        </div>
+    </header>
+
+    <main>
+        <h1>Your Shopping Cart</h1>
+        
+        <div class="cart-container">
+            {% if items %}
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" class="item-image" alt="{{ item.product.name }}">
+                                {% endif %}
+                                {{ item.product.name }}
+                            </td>
+                            <td>${{ item.product.price }}</td>
+                            <td>
+                                <div class="qty-controls">
+                                    <a href="{% url 'update_quantity' item.id 'subtract' %}" class="qty-btn">-</a>
+                                    <span class="qty-display">{{ item.quantity }}</span>
+                                    <a href="{% url 'update_quantity' item.id 'add' %}" class="qty-btn">+</a>
+                                </div>
+                            </td>
+                            <td><strong>${{ item.get_total_price }}</strong></td>
+                            <td>
+                                <a href="{% url 'remove_from_cart' item.id %}" class="remove-btn">Remove</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <div class="cart-summary">
+                    <span class="total-label">Grand Total:</span>
+                    <span class="total-price">${{ total_price }}</span>
+                    <button class="checkout-btn">Proceed to Checkout</button>
+                </div>
+            {% else %}
+                <div class="empty-cart">
+                    <h2>Your cart is empty.</h2>
+                    <p style="margin-top: 10px;"><a href="{% url 'home' %}" style="color: #000; font-weight: bold;">Browse products</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+</body>
+</html>

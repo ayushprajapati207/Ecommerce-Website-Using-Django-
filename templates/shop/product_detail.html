@@ -12,8 +12,13 @@
     <header>
         <a href="{% url 'home' %}" class="logo">AGE.</a>
         <div class="nav-links">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="#">Cart (0)</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'view_cart' %}">Cart (<span id="cart-count">0</span>)</a>
+                <a href="{% url 'logout' %}">Logout</a> 
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
         </div>
     </header>
 
@@ -39,10 +44,19 @@
                 </div>
                 
                 <div class="action-buttons">
-                    <button class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+                    {% if cart_item %}
+                        <div class="qty-controls">
+                            <a href="{% url 'update_quantity' cart_item.id 'subtract' %}" class="qty-btn">-</a>
+                            <span class="qty-display">{{ cart_item.quantity }}</span>
+                            <a href="{% url 'update_quantity' cart_item.id 'add' %}" class="qty-btn">+</a>
+                        </div>
+                    {% else %}
+                        <button class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+                    {% endif %}
+                    
                     <button class="btn btn-buy">Buy Now</button>
                     <button class="wishlist-btn" title="Add to Wishlist" data-product-id="{{ product.id }}">&#9825;</button>
-                </div>
+                </div> 
             </div>
         </div>
     </main>

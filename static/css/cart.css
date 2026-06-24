@@ -1,0 +1,47 @@
+/* Base Styles & Header */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #f4f7f6; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+header { background-color: #000; color: #fff; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; letter-spacing: 1px; }
+.nav-links a { color: #fff; text-decoration: none; margin-left: 20px; font-size: 15px; transition: color 0.3s; }
+.nav-links a:hover { color: #ccc; }
+main { flex: 1; padding: 40px; max-width: 1000px; margin: 0 auto; width: 100%; }
+
+/* Cart Layout */
+h1 { margin-bottom: 30px; }
+.cart-container { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 30px; }
+.cart-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+.cart-table th, .cart-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eaeaea; }
+.cart-table th { color: #888; font-weight: normal; text-transform: uppercase; font-size: 12px; }
+.item-image { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 15px; }
+
+/* Cart Totals & Checkout */
+.cart-summary { display: flex; justify-content: flex-end; align-items: center; border-top: 2px solid #000; padding-top: 20px; }
+.total-label { font-size: 18px; margin-right: 20px; font-weight: bold; }
+.total-price { font-size: 24px; color: #2ed573; font-weight: bold; margin-right: 30px; }
+.checkout-btn { background-color: #000; color: #fff; padding: 15px 30px; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+.checkout-btn:hover { background-color: #333; }
+.empty-cart { text-align: center; padding: 50px; color: #888; }
+
+
+.remove-btn { color: #ff4757; text-decoration: none; font-size: 14px; font-weight: bold; transition: color 0.3s; }
+.remove-btn:hover { color: #cc0000; text-decoration: underline; }
+
+/* Quantity Controls */
+.qty-controls { display: flex; align-items: center; gap: 12px; }
+.qty-btn { 
+    background-color: #f1f2f6; 
+    color: #333; 
+    text-decoration: none; 
+    width: 30px; 
+    height: 30px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    border-radius: 4px; 
+    font-weight: bold; 
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+.qty-btn:hover { background-color: #dfe4ea; text-decoration: none; color: #000; }
+.qty-display { font-weight: bold; font-size: 16px; width: 20px; text-align: center; }

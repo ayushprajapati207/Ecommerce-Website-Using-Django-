@@ -1,6 +1,6 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
+from django.contrib.auth import login,logout
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required 
 from django.http import JsonResponse
@@ -23,9 +23,19 @@ def home(request):
     return render(request, 'shop/home.html', {'products': products, 'search_query': query})
 
 def product_detail(request, slug):
-    # Fetch the exact product using its unique slug
     product = get_object_or_404(Product, slug=slug, is_available=True)
-    return render(request, 'shop/product_detail.html', {'product': product})
+    
+    cart_item = None
+    # If the user is logged in, check if this product is already inside their cart
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            cart_item = CartItem.objects.filter(cart=cart, product=product).first()
+            
+    return render(request, 'shop/product_detail.html', {
+        'product': product, 
+        'cart_item': cart_item  # Pass this to the template!
+    })
 
 
 def signup(request):
@@ -84,3 +94,58 @@ def add_to_cart(request, product_id):
         return JsonResponse({'success': True, 'cart_count': cart_count})
         
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+@login_required
+def view_cart(request):
+    # Fetch the user's cart (or create an empty one if they somehow don't have one)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    
+    # Grab all the items currently sitting in this cart
+    items = cart.items.all()
+    
+    # Calculate the grand total by looping through each item's price
+    total_price = sum(item.get_total_price() for item in items)
+    
+    return render(request, 'shop/cart.html', {
+        'items': items, 
+        'total_price': total_price
+    })
+
+
+@login_required
+def remove_from_cart(request, item_id):
+    # Find the specific item, ensuring it actually belongs to the logged-in user's cart
+    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    
+    # Delete it from the database
+    cart_item.delete()
+    
+    # Redirect the user back to their cart page to see the updated total
+    return redirect('view_cart')
+
+@login_required
+def update_cart_quantity(request, item_id, action):
+    # Securely grab the item from the user's cart
+    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    
+    if action == 'add':
+        cart_item.quantity += 1
+        cart_item.save()
+    elif action == 'subtract':
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            # If it goes below 1, just remove the item entirely
+            cart_item.delete()
+            
+    # Refresh the cart page to recalculate all totals
+    return redirect(request.META.get('HTTP_REFERER', 'view_cart'))
+
+
+def logout_user(request):
+    # This safely destroys the user's session and removes their cookies
+    logout(request)
+    # Send them back to the shop homepage as a guest
+    return redirect('home')
