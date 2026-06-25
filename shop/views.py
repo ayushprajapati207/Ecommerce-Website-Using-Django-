@@ -4,7 +4,7 @@ from django.contrib.auth import login,logout
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required 
 from django.http import JsonResponse
-from .models import Product,Category,CartItem,Cart
+from .models import Product,CartItem,Cart,Order,OrderItem
 
 def home(request):
     # Get the search term from the URL (e.g., ?q=shirt)
@@ -149,3 +149,51 @@ def logout_user(request):
     logout(request)
     # Send them back to the shop homepage as a guest
     return redirect('home')
+
+
+@login_required
+def checkout(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    items = cart.items.all()
+    
+    # If the cart is empty, don't let them checkout
+    if not items:
+        return redirect('view_cart')
+        
+    if request.method == 'POST':
+        # Grab the data from the HTML form
+        name = request.POST.get('full_name')
+        address = request.POST.get('shipping_address')
+        total_price = sum(item.get_total_price() for item in items)
+        
+        # 1. Create the permanent Order record
+        order = Order.objects.create(
+            user=request.user,
+            full_name=name,
+            shipping_address=address,
+            total_price=total_price
+        )
+        
+        # 2. Copy the Cart items into permanent Order items
+        for item in items:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price # Freezes the price
+            )
+            # Optional: Deduct from actual product stock here
+            # item.product.stock -= item.quantity
+            # item.product.save()
+            
+        # 3. Empty the user's cart
+        cart.items.all().delete()
+        
+        # 4. Redirect to a success page
+        return redirect('order_success')
+        
+    return render(request, 'shop/checkout.html', {'items': items})
+
+@login_required
+def order_success(request):
+    return render(request, 'shop/success.html')

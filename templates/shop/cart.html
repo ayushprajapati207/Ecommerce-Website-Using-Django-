@@ -60,7 +60,7 @@
                 <div class="cart-summary">
                     <span class="total-label">Grand Total:</span>
                     <span class="total-price">${{ total_price }}</span>
-                    <button class="checkout-btn">Proceed to Checkout</button>
+                    <a href="{% url 'checkout' %}"><button class="checkout-btn">Proceed to Checkout</button></a>
                 </div>
             {% else %}
                 <div class="empty-cart">

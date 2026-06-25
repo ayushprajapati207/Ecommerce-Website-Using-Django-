@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Age Store</title>
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+</head>
+<body>
+
+    <div class="checkout-card">
+        <h2>Secure Checkout</h2>
+        
+        <div class="summary">
+            <strong>Order Summary:</strong> {{ items.count }} item(s) in your cart.
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="full_name" required>
+            
+            <label for="shipping_address">Shipping Address</label>
+            <textarea id="shipping_address" name="shipping_address" rows="3" required></textarea>
+            
+            <button type="submit" class="pay-button">Place Order</button>
+        </form>
+        
+        <a href="{% url 'view_cart' %}" class="back-link">Return to Cart</a>
+    </div>
+
+</body>
+</html>

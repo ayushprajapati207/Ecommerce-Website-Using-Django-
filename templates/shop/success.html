@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success - Age Store</title>
+    <style>
+        body { background-color: #f4f7f6; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: 'Segoe UI', sans-serif;}
+        .card { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        h1 { color: #27ae60; margin-bottom: 20px; }
+        a { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Order Confirmed! 🎉</h1>
+        <p>Thank you for your purchase. We are processing your order now.</p>
+        <a href="{% url 'home' %}">Continue Shopping</a>
+    </div>
+</body>
+</html>
