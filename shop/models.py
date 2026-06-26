@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -20,6 +21,15 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     users_wishlist = models.ManyToManyField(User, related_name='wishlist', blank=True)
     
+    def get_average_rating(self):
+        # Calculates the average of all review ratings for this specific product
+        avg = self.reviews.aggregate(Avg('rating'))['rating__avg']
+        return avg if avg is not None else 0
+        
+    def get_review_count(self):
+        # Counts how many total reviews exist
+        return self.reviews.count()
+
     def __str__(self):
         return self.name
     
@@ -65,3 +75,13 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} (Order #{self.order.id})"
+    
+class Review(models.Model):
+    product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(default=5) # e.g., 1 to 5 stars
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name} - {self.rating} Stars"

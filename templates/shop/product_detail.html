@@ -15,6 +15,7 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'home' %}">Home</a>
                 <a href="{% url 'view_cart' %}">Cart (<span id="cart-count">0</span>)</a>
+                <a href="{% url 'wishlist_page' %}">Wishlist</a>
                 <a href="{% url 'logout' %}">Logout</a> 
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
@@ -36,6 +37,15 @@
             
             <div class="detail-info">
                 <h1>{{ product.name }}</h1>
+
+                    <div class="product-meta">
+                        <span class="meta-stars">
+                            ★ {{ product.get_average_rating|floatformat:1 }}
+                        </span>
+                        <a href="#reviews" class="meta-count" onclick="document.querySelector('.reviews-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                            ({{ product.get_review_count }} Reviews)
+                        </a>
+                    </div>
                 <p class="price">${{ product.price }}</p>
                 <p class="stock-status">In Stock ({{ product.stock }} available)</p>
                 
@@ -69,6 +79,55 @@
                     
                     <button class="wishlist-btn" title="Add to Wishlist" data-product-id="{{ product.id }}">&#9825;</button>
                 </div> 
+            </div>
+        </div>
+        <div class="reviews-section">
+            <h2>Customer Reviews</h2>
+            
+            {% if user.is_authenticated %}
+                <div class="review-form">
+                    <h3>Leave a Review</h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <label for="rating">Rating</label>
+                        <select name="rating" id="rating" required>
+                            <option value="5">5 Stars - Excellent</option>
+                            <option value="4">4 Stars - Good</option>
+                            <option value="3">3 Stars - Average</option>
+                            <option value="2">2 Stars - Poor</option>
+                            <option value="1">1 Star - Terrible</option>
+                        </select>
+                        
+                        <label for="comment">Your Review</label>
+                        <textarea name="comment" id="comment" rows="4" placeholder="What did you think about this product?" required></textarea>
+                        
+                        <button type="submit" class="review-btn">Submit Review</button>
+                    </form>
+                </div>
+            {% else %}
+                <p style="margin-bottom: 30px;"><a href="{% url 'login' %}">Log in</a> to leave a review.</p>
+            {% endif %}
+
+            <div class="reviews-list">
+                {% for review in product.reviews.all reversed %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="reviewer-name">{{ review.user.username }}</span>
+                            <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="star-rating">
+                            {% if review.rating == 5 %}★★★★★
+                            {% elif review.rating == 4 %}★★★★☆
+                            {% elif review.rating == 3 %}★★★☆☆
+                            {% elif review.rating == 2 %}★★☆☆☆
+                            {% elif review.rating == 1 %}★☆☆☆☆
+                            {% endif %}
+                        </div>
+                        <p class="review-text">{{ review.comment }}</p>
+                    </div>
+                {% empty %}
+                    <p style="color: #666;">No reviews yet. Be the first to review this product!</p>
+                {% endfor %}
             </div>
         </div>
     </main>

@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - Age Store</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+    <header>
+        <a href="{% url 'home' %}" class="logo">AGE.</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'view_cart' %}">Cart</a>
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </header>
+
+    <main>
+        <h1 style="margin-bottom: 30px;">My Wishlist</h1>
+        
+        {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        <a href="{% url 'product_detail' product.slug %}" class="image-container" style="text-decoration: none;">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <span class="placeholder-text">No Image</span>
+                            {% endif %}
+                            
+                            <div class="heart-icon wishlist-btn" title="Remove from Wishlist" data-product-id="{{ product.id }}" style="color: #ff4757;">&#9829;</div>
+                        </a>
+                        
+                        <div class="card-content">
+                            <h3><a href="{% url 'product_detail' product.slug %}" style="text-decoration: none; color: inherit;">{{ product.name }}</a></h3>
+                            
+                            <div style="color: #f1c40f; font-size: 14px; margin-bottom: 8px;">
+                                ★ {{ product.get_average_rating|floatformat:1 }} 
+                                <span style="color: #ccc; font-size: 12px;">({{ product.get_review_count }})</span>
+                            </div>
+                            
+                            <p class="price">${{ product.price }}</p>
+                            
+                            <div class="button-group">
+                                {% if product.stock > 0 and product.is_available %}
+                                    <button class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+                                {% else %}
+                                    <button class="btn" style="background-color: #ccc; color: #666; cursor: not-allowed; width: 100%;" disabled>Out of Stock</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 50px; background: #fff; border-radius: 8px;">
+                <h2 style="color: #333; margin-bottom: 10px;">Your wishlist is empty</h2>
+                <p style="color: #666; margin-bottom: 20px;">Save items you love to keep track of them here.</p>
+                <a href="{% url 'home' %}" style="display: inline-block; padding: 10px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 4px;">Explore Products</a>
+            </div>
+        {% endif %}
+    </main>
+
+    <script src="{% static 'js/wishlist.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+    
+    <script>
+        document.querySelectorAll('.heart-icon').forEach(icon => {
+            icon.addEventListener('click', () => {
+                // Wait half a second for the backend toggle to finish, then refresh to remove the card
+                setTimeout(() => { location.reload(); }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+/* Category Menu */
+.category-menu {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.category-pill {
+    padding: 8px 20px;
+    background-color: #fff;
+    color: #333;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.category-pill:hover, .category-pill.active {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}

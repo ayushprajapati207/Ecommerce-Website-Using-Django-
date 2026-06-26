@@ -4,37 +4,65 @@ from django.contrib.auth import login,logout
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required 
 from django.http import JsonResponse
-from .models import Product,CartItem,Cart,Order,OrderItem
+from .models import Product,Category,CartItem,Cart,Order,OrderItem,Review
+from django.core.paginator import Paginator
 
-def home(request):
-    # Get the search term from the URL (e.g., ?q=shirt)
-    query = request.GET.get('q')
-    
-    # Start with all available products
+def home(request, category_slug=None):
+    category = None
+    categories = Category.objects.all()
     products = Product.objects.filter(is_available=True)
     
-    # If the user typed something in the search bar, filter the products
+    if category_slug:
+        category = get_object_or_404(Category, slug=category_slug)
+        products = products.filter(category=category)
+        
+    query = request.GET.get('q')
     if query:
         products = products.filter(
             Q(name__icontains=query) | Q(description__icontains=query)
         )
+        
+    # --- NEW PAGINATION LOGIC ---
+    # Show 6 products per page (you can change this number to whatever you want!)
+    paginator = Paginator(products, 6) 
+    page_number = request.GET.get('page')
+    # This replaces our original 'products' list with just the products for the current page
+    products = paginator.get_page(page_number) 
     
-    # Pass the products and the query back to the template
-    return render(request, 'shop/home.html', {'products': products, 'search_query': query})
+    return render(request, 'shop/home.html', {
+        'category': category,
+        'categories': categories, 
+        'products': products, 
+        'search_query': query
+    })
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_available=True)
     
+    # Handle New Review Submission
+    if request.method == 'POST' and request.user.is_authenticated:
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        
+        # Save the review to the database
+        Review.objects.create(
+            product=product,
+            user=request.user,
+            rating=rating,
+            comment=comment
+        )
+        # Refresh the page to show the new review
+        return redirect('product_detail', slug=product.slug)
+
+    # Existing Cart Logic
     cart_item = None
-    # If the user is logged in, check if this product is already inside their cart
     if request.user.is_authenticated:
-        cart = Cart.objects.filter(user=request.user).first()
-        if cart:
-            cart_item = CartItem.objects.filter(cart=cart, product=product).first()
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_item = CartItem.objects.filter(cart=cart, product=product).first()
             
     return render(request, 'shop/product_detail.html', {
         'product': product, 
-        'cart_item': cart_item  # Pass this to the template!
+        'cart_item': cart_item
     })
 
 
@@ -220,3 +248,10 @@ def profile(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     
     return render(request, 'shop/profile.html', {'orders': orders})
+
+@login_required
+def wishlist_page(request):
+    # Fetch all products where the current user is in the wishlist relationship
+    wishlist_products = Product.objects.filter(users_wishlist=request.user)
+    
+    return render(request, 'shop/wishlist.html', {'products': wishlist_products})

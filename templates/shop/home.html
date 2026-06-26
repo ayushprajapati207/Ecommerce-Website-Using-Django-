@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Age Store - Home</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home2.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home3.css' %}">
 </head>
 <body>
 
@@ -21,7 +23,9 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}">Welcome, {{ user.username }}</a>
                 <a href="{% url 'view_cart' %}">Cart (<span id="cart-count">0</span>)</a>
+                <a href="{% url 'wishlist_page' %}">Wishlist</a>
                 <a href="{% url 'logout' %}">Logout</a> 
+
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
             {% endif %}
@@ -30,6 +34,13 @@
 
     <main>
         <h1>Latest Products</h1>
+        <div class="category-menu">
+            <a href="{% url 'home' %}" class="category-pill {% if not category %}active{% endif %}">All Products</a>
+            
+            {% for cat in categories %}
+                <a href="{% url 'products_by_category' cat.slug %}" class="category-pill {% if category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+            {% endfor %}
+        </div>
         <div class="product-grid">
             
             {% for product in products %}
@@ -46,7 +57,10 @@
                 
                 <div class="card-content">
                     <h3><a href="{% url 'product_detail' product.slug %}" style="text-decoration: none; color: inherit;">{{ product.name }}</a></h3>
-                    
+                    <div style="color: #f1c40f; font-size: 14px; margin-bottom: 8px;">
+                        ★ {{ product.get_average_rating|floatformat:1 }} 
+                        <span style="color: #ccc; font-size: 12px;">({{ product.get_review_count }})</span>
+                    </div>
                     <p class="price">${{ product.price }}</p>
                     
                     <div class="button-group">
@@ -60,6 +74,21 @@
             {% endfor %}
 
         </div>
+        {% if products.has_other_pages %}
+            <div class="pagination">
+                {% if products.has_previous %}
+                    <a href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-btn">Previous</a>
+                {% endif %}
+                
+                <span class="current-page">
+                    Page {{ products.number }} of {{ products.paginator.num_pages }}
+                </span>
+                
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="page-btn">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
     </main>
 
     <footer>
