@@ -44,17 +44,29 @@
                 </div>
                 
                 <div class="action-buttons">
-                    {% if cart_item %}
-                        <div class="qty-controls">
-                            <a href="{% url 'update_quantity' cart_item.id 'subtract' %}" class="qty-btn">-</a>
-                            <span class="qty-display">{{ cart_item.quantity }}</span>
-                            <a href="{% url 'update_quantity' cart_item.id 'add' %}" class="qty-btn">+</a>
-                        </div>
+                    {% if product.stock > 0 and product.is_available %}
+                        
+                        {% if cart_item %}
+                            <div class="qty-controls">
+                                <a href="{% url 'update_quantity' cart_item.id 'subtract' %}" class="qty-btn">-</a>
+                                <span class="qty-display">{{ cart_item.quantity }}</span>
+                                
+                                {% if cart_item.quantity >= product.stock %}
+                                    <span class="qty-btn" style="opacity: 0.5; cursor: not-allowed;" title="Max stock reached">+</span>
+                                {% else %}
+                                    <a href="{% url 'update_quantity' cart_item.id 'add' %}" class="qty-btn">+</a>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <button class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+                        {% endif %}
+                        
+                        <button class="btn btn-buy">Buy Now</button>
+                        
                     {% else %}
-                        <button class="btn btn-cart add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+                        <button class="btn" style="background-color: #ccc; color: #666; cursor: not-allowed; width: 100%;" disabled>Out of Stock</button>
                     {% endif %}
                     
-                    <button class="btn btn-buy">Buy Now</button>
                     <button class="wishlist-btn" title="Add to Wishlist" data-product-id="{{ product.id }}">&#9825;</button>
                 </div> 
             </div>

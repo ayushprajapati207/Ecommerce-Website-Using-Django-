@@ -77,20 +77,22 @@ def add_to_cart(request, product_id):
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
         
-        # Get the user's cart, or create a new one if it doesn't exist
+        # --- NEW INVENTORY CHECK ---
+        if product.stock <= 0 or not product.is_available:
+            return JsonResponse({'error': 'Product is out of stock'}, status=400)
+            
         cart, created = Cart.objects.get_or_create(user=request.user)
-        
-        # Check if this exact product is already in their cart
         cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
         
         if not item_created:
-            # If it was already in the cart, just add 1 to the quantity
-            cart_item.quantity += 1
-            cart_item.save()
-            
-        # Calculate the total number of unique items in the cart to update the header
+            # --- PREVENT EXCEEDING STOCK ---
+            if cart_item.quantity < product.stock:
+                cart_item.quantity += 1
+                cart_item.save()
+            else:
+                return JsonResponse({'error': 'Not enough stock available'}, status=400)
+                
         cart_count = cart.items.count()
-        
         return JsonResponse({'success': True, 'cart_count': cart_count})
         
     return JsonResponse({'error': 'Invalid request'}, status=400)
@@ -130,8 +132,13 @@ def update_cart_quantity(request, item_id, action):
     cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     
     if action == 'add':
-        cart_item.quantity += 1
-        cart_item.save()
+        # --- NEW INVENTORY CHECK ---
+        # Only increase the quantity if it's less than what you actually have in stock
+        if cart_item.quantity < cart_item.product.stock:
+            cart_item.quantity += 1
+            cart_item.save()
+        # (If they hit the limit, it just ignores the click and reloads the page)
+            
     elif action == 'subtract':
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
@@ -180,11 +187,19 @@ def checkout(request):
                 order=order,
                 product=item.product,
                 quantity=item.quantity,
-                price=item.product.price # Freezes the price
+                price=item.product.price
             )
-            # Optional: Deduct from actual product stock here
-            # item.product.stock -= item.quantity
-            # item.product.save()
+            
+            # --- NEW INVENTORY LOGIC ---
+            # Deduct the purchased amount from the main product stock
+            item.product.stock -= item.quantity
+            
+            # If the stock hits zero, automatically mark it as unavailable
+            if item.product.stock <= 0:
+                item.product.stock = 0
+                item.product.is_available = False
+                
+            item.product.save()
             
         # 3. Empty the user's cart
         cart.items.all().delete()
@@ -197,3 +212,11 @@ def checkout(request):
 @login_required
 def order_success(request):
     return render(request, 'shop/success.html')
+
+
+@login_required
+def profile(request):
+    # Fetch all orders for this user, sorted by newest first (using the minus sign)
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    return render(request, 'shop/profile.html', {'orders': orders})

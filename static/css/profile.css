@@ -1,0 +1,27 @@
+/* Base Styles & Header (Reused to keep consistency) */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #f4f7f6; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+header { background-color: #000; color: #fff; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; letter-spacing: 1px; }
+.nav-links a { color: #fff; text-decoration: none; margin-left: 20px; font-size: 15px; transition: color 0.3s; }
+.nav-links a:hover { color: #ccc; }
+
+/* Profile Layout */
+main { flex: 1; padding: 40px; max-width: 1000px; margin: 0 auto; width: 100%; }
+.profile-header { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 40px; }
+.profile-header h1 { margin-bottom: 10px; font-size: 28px; }
+.profile-header p { color: #666; font-size: 16px; }
+
+/* Order History Cards */
+h2 { margin-bottom: 20px; font-size: 22px; }
+.order-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; overflow: hidden; }
+.order-header { background: #fafafa; padding: 15px 25px; border-bottom: 1px solid #eaeaea; display: flex; justify-content: space-between; align-items: center; }
+.order-header .order-id { font-weight: bold; font-size: 16px; }
+.order-header .order-date { color: #888; font-size: 14px; }
+.order-header .order-total { font-weight: bold; color: #27ae60; font-size: 18px; }
+
+.order-items { padding: 20px 25px; }
+.item-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }
+.item-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.item-name { color: #444; font-weight: 500; }
+.item-qty { color: #888; font-size: 14px; }

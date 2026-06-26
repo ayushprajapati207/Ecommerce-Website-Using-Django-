@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Age Store</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body>
+
+    <header>
+        <a href="{% url 'home' %}" class="logo">AGE.</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'view_cart' %}">Cart</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="profile-header">
+            <h1>Welcome back, {{ user.username }}!</h1>
+            <p>Manage your account and view your order history below.</p>
+        </div>
+
+        <h2>Order History</h2>
+        
+        {% if orders %}
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #{{ order.id }}</div>
+                        <div class="order-date">Placed on {{ order.created_at|date:"M d, Y" }}</div>
+                    </div>
+                    <div class="order-total">${{ order.total_price }}</div>
+                </div>
+                
+                <div class="order-items">
+                    {% for item in order.items.all %}
+                    <div class="item-row">
+                        <div>
+                            <span class="item-name">{{ item.product.name }}</span>
+                            <span class="item-qty">x {{ item.quantity }}</span>
+                        </div>
+                        <div class="item-price">${{ item.price }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #666; background: #fff; padding: 20px; border-radius: 8px;">You haven't placed any orders yet. Time to start shopping!</p>
+        {% endif %}
+
+    </main>
+
+</body>
+</html>
